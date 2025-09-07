@@ -27,4 +27,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: pm2 restart shopdev-backend
+    - name: Restart application with PM2
+      run: |
+        # Check if PM2 process exists, if not create it
+        if npx pm2 describe shopdev-backend > /dev/null 2>&1; then
+          npx pm2 restart shopdev-backend
+        else
+          npx pm2 start src/app.js --name=shopdev-backend
+        fi
+    - name: Save PM2 process list
+      run: npx pm2 save
